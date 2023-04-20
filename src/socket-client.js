@@ -29,15 +29,30 @@ class NotificationService {
   constructor () {
     // const { apiBaseUrl } = getConfig()
     // this.apiBaseUrl = apiBaseUrl
-    this.sessionId = TraceHeaderUtils.generateSessionId()
+    console.log(this.apiBaseUrl);
+    // this.sessionId = TraceHeaderUtils.generateSessionId()
     for (const logType of Object.keys(this.logTypes)) {
       const item = this.logTypes[logType]
-      console.log(this.sessionId);
-      item.socket = socketIOClient(this.apiBaseUrl)
-      // console.log(item.socket);
-      item.socket.on(item.socketTopic + '/' + this.sessionId, log => {
-        // console.log(log);
-        console.log(this.handleNotificationLog( {...log, internalLogType: logType}))
+
+      item.socket = socketIOClient.connect("http://35.203.25.18:5050", {
+        transports: ["websocket"] 
+      });
+
+      item.socket.on(item.socketTopic, ( log ) => {
+        // console.log('estoy aquí')
+        this.handleNotificationLog( {...log, internalLogType: logType})
+        // console.log({...log, internalLogType: logType});
+      })
+
+      // item.socket = socketIOClient.connect(this.apiBaseUrl)
+      // console.log('estoy escuchando');
+      // item.socket.on(item.socketTopic + '/' + this.sessionId, (log) => {
+      //   console.log('pasó algo...');
+      //   this.handleNotificationLog( {...log, internalLogType: logType})
+      // });
+
+      item.socket.on('error', (error) => {
+          console.log(error);
       });
     }
   }
@@ -262,7 +277,7 @@ class NotificationService {
   }
 
   handleNotificationLog = (log) => {
-    console.log(log)
+    // console.log(log);
     
     // Handle the outbound progress events
     if ( log.internalLogType === 'outboundProgress' ) {

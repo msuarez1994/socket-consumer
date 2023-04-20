@@ -5,13 +5,13 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node ./src/index"
+    "start": "nodemon ./src/index"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@mojaloop/ml-testing-toolkit-shared-lib": "^13.0.0",
-    "socket.io-client": "^4.6.1"
+    "socket.io-client": "^2.1.4"
   }
 }
