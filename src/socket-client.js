@@ -12,10 +12,10 @@ class NotificationService {
       socket: null,
       socketTopic: "newLog"
     },
-    outboundProgress: {
-      socket: null,
-      socketTopic: "outboundProgress"
-    }
+    // outboundProgress: {
+    //   socket: null,
+    //   socketTopic: "outboundProgress"
+    // }
   }
   notificationEventFunction = () => {}
 
@@ -27,29 +27,19 @@ class NotificationService {
   sessionId = '123'
 
   constructor () {
-    // const { apiBaseUrl } = getConfig()
-    // this.apiBaseUrl = apiBaseUrl
-    console.log(this.apiBaseUrl);
-    // this.sessionId = TraceHeaderUtils.generateSessionId()
+    
     for (const logType of Object.keys(this.logTypes)) {
       const item = this.logTypes[logType]
 
-      item.socket = socketIOClient.connect("http://35.203.25.18:5050", {
+      item.socket = socketIOClient.connect(this.apiBaseUrl, {
         transports: ["websocket"] 
       });
 
       item.socket.on(item.socketTopic, ( log ) => {
-        // console.log('estoy aquí')
+        
         this.handleNotificationLog( {...log, internalLogType: logType})
         // console.log({...log, internalLogType: logType});
       })
-
-      // item.socket = socketIOClient.connect(this.apiBaseUrl)
-      // console.log('estoy escuchando');
-      // item.socket.on(item.socketTopic + '/' + this.sessionId, (log) => {
-      //   console.log('pasó algo...');
-      //   this.handleNotificationLog( {...log, internalLogType: logType})
-      // });
 
       item.socket.on('error', (error) => {
           console.log(error);
@@ -277,8 +267,6 @@ class NotificationService {
   }
 
   handleNotificationLog = (log) => {
-    // console.log(log);
-    
     // Handle the outbound progress events
     if ( log.internalLogType === 'outboundProgress' ) {
       if (log.status === 'FINISHED' || log.status === 'TERMINATED') {
