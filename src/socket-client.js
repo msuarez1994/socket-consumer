@@ -1,6 +1,5 @@
-import socketIOClient from "socket.io-client";
-// import { getConfig } from '../../../utils/getConfig'
-import { TraceHeaderUtils } from '@mojaloop/ml-testing-toolkit-shared-lib'
+const socketIOClient = require('socket.io-client');
+const config = require('./config');
 
 class NotificationService {
   logTypes = {
@@ -23,22 +22,21 @@ class NotificationService {
     this.notificationEventFunction = notificationEventFunction
   }
 
-  apiBaseUrl = 'http://35.203.25.18:5050'
+  socketBaseUrl = config.api.socket_url
+  
   sessionId = '123'
 
   constructor () {
-    
     for (const logType of Object.keys(this.logTypes)) {
       const item = this.logTypes[logType]
 
-      item.socket = socketIOClient.connect(this.apiBaseUrl, {
+      item.socket = socketIOClient.connect(this.socketBaseUrl, {
         transports: ["websocket"] 
       });
 
       item.socket.on(item.socketTopic, ( log ) => {
-        
+        // console.log(log);
         this.handleNotificationLog( {...log, internalLogType: logType})
-        // console.log({...log, internalLogType: logType});
       })
 
       item.socket.on('error', (error) => {
@@ -267,6 +265,7 @@ class NotificationService {
   }
 
   handleNotificationLog = (log) => {
+    // console.log(log);
     // Handle the outbound progress events
     if ( log.internalLogType === 'outboundProgress' ) {
       if (log.status === 'FINISHED' || log.status === 'TERMINATED') {
@@ -366,6 +365,7 @@ class NotificationService {
           && log.resource.method === 'put'
           && log.resource.path.startsWith('/parties/')
     ) {
+      
       this.notifyPayerMonitorLog(log)
       this.notificationEventFunction({
         category: 'payer',
@@ -750,4 +750,4 @@ class NotificationService {
 
 }
 
-export default NotificationService
+module.exports = NotificationService;

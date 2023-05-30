@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "start": "nodemon ./src/index"
   },
@@ -12,6 +12,9 @@
   "license": "ISC",
   "dependencies": {
     "@mojaloop/ml-testing-toolkit-shared-lib": "^13.0.0",
+    "axios": "^1.4.0",
+    "dotenv": "^16.0.3",
+    "moment": "^2.29.4",
     "socket.io-client": "^2.1.4"
   }
 }
